@@ -60,7 +60,12 @@ const app = http.createServer(function(request,response){
             let list = templateList(filelist);
             const template = templateHTML(title, list,
               `<h2>${title}</h2>${description}`,
-              `<a href = '/create'>create</a> <a href = '/update?id=${title}'>update</a>`
+              `<a href = '/create'>create</a>
+              <a href = '/update?id=${title}'>update</a>
+              <form action="delete_process" method="post">
+                <input type="hidden" name="id" value="${title}">
+                <input type="submit" value="delete">
+              </form>`
               );
             response.writeHead(200);
             response.end(template);
@@ -157,6 +162,24 @@ const app = http.createServer(function(request,response){
               response.end('success');
             })
           });
+
+          console.log(post); // [Object: null prototype] { title: 'qq', description: 'zz' }
+
+        });
+    } else if (pathname === '/delete_process') {
+        let body = '';
+
+        request.on('data', (data) => { // 전송된 데이터 가져오기
+          body += data; // 정보 조각조각 들어오다가
+        });
+
+        request.on('end', () => { // 다 들어오면
+          const post = qs.parse(body); // 객체화
+          const id = post.id;
+          fs.unlink(`data/${id}`, (error) => {
+            response.writeHead(302, {Location: `/`}); // 삭제되면 바로 홈으로
+            response.end();
+          })
 
           console.log(post); // [Object: null prototype] { title: 'qq', description: 'zz' }
 
