@@ -1,0 +1,11 @@
+<form action = "http://localhost:3000/process_create" method="post">
+    <!--  get할때는 쿼리스트링(?title=aa), 생성, 수정, 삭제 => 보이지 않는 방식 method="post". 안쓰면 기본 get -->
+    <p><input type = "text" name = "title"></p>
+    <p>
+        <textarea name = 'description'></textarea>
+    </p>
+
+    <p>
+        <input type="submit">
+    </p>
+</form>
