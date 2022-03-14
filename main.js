@@ -2,13 +2,14 @@ const http = require('http');
 const fs = require('fs');
 const url = require('url');
 const qs = require('querystring');
- 
+const template = require('./lib/template'); // 모듈로 뺌
+
 const templateHTML = (title, list, body, control) => {
     return `
     <!doctype html>
     <html>
     <head>
-      <title>WEB1 - ${title}</title>
+      <title>WEB - ${title}</title>
       <meta charset="utf-8">
     </head>
     <body>
@@ -43,22 +44,24 @@ const app = http.createServer(function(request,response){
         fs.readdir('./data', function(error, filelist){
           const title = 'Welcome home';
           const description = 'Hello, Node.js';
-          let list = templateList(filelist);
+          
+          // let list = templateList(filelist);
+          let list = template.list(filelist);
 
-          const template = templateHTML(title, list,
+          const html = template.html(title, list,
             `<h2>${title}</h2>${description}`,
             `<a href = '/create'>create</a>`
             );
 
           response.writeHead(200);
-          response.end(template);
+          response.end(html);
         })
       } else { // 아이디 입력 되었을 때, 즉 페이지 이동 시
         fs.readdir('./data', function(error, filelist){
             fs.readFile(`data/${queryData.id}`, 'utf8', function(err, description){
             const title = queryData.id;
-            let list = templateList(filelist);
-            const template = templateHTML(title, list,
+            let list = template.list(filelist);
+            const html = template.html(title, list,
               `<h2>${title}</h2>${description}`,
               `<a href = '/create'>create</a>
               <a href = '/update?id=${title}'>update</a>
@@ -68,7 +71,7 @@ const app = http.createServer(function(request,response){
               </form>`
               );
             response.writeHead(200);
-            response.end(template);
+            response.end(html);
           });
         });
       }
