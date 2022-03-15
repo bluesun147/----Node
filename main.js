@@ -4,36 +4,6 @@ const url = require('url');
 const qs = require('querystring');
 const template = require('./lib/template'); // 모듈로 뺌
 
-const templateHTML = (title, list, body, control) => {
-    return `
-    <!doctype html>
-    <html>
-    <head>
-      <title>WEB - ${title}</title>
-      <meta charset="utf-8">
-    </head>
-    <body>
-      <h1><a href="/">WEB</a></h1>
-      ${list}
-      ${control}
-      ${body}
-    </body>
-    </html>
-    `;
-}
-
-const templateList = (filelist) => {
-    let list = '<ul>';
-    let i = 0;
-    while(i < filelist.length){
-    list = list + `<li><a href="/?id=${filelist[i]}">${filelist[i]}!</a></li>`;
-    i = i + 1;
-    }
-    list = list+'</ul>';
-    return list;
-}
-
-
 const app = http.createServer(function(request,response){
   const _url = request.url; // 3000 뒷 부분. / , /?id=css3 등
   const queryData = url.parse(_url, true).query; // [Object: null prototype] { id: 'html' }
@@ -78,9 +48,9 @@ const app = http.createServer(function(request,response){
       fs.readdir('./data', function(error, filelist){
         const title = 'WEB - create';
         
-        let list = templateList(filelist);
+        let list = template.list(filelist);
 
-        const template = templateHTML(title, list, `
+        const html = template.html(title, list, `
         <form action = "/create_process" method="post">
         <!-- create_process로 정보 전송. get할때는 쿼리스트링(?title=aa), 생성, 수정, 삭제 => 보이지 않는 방식 method="post". 안쓰면 기본 get -->
           <p><input type = "text" placeholder = "title" name = "title"></p>
@@ -95,7 +65,7 @@ const app = http.createServer(function(request,response){
         `, ''); // form 입력 양식
 
         response.writeHead(200);
-        response.end(template);
+        response.end(html);
       })
     } else if (pathname === '/create_process') { // 처리한 후에 쓴 글 페이지로 리다이렉션 하자. 302
         let body = '';
@@ -121,8 +91,8 @@ const app = http.createServer(function(request,response){
       fs.readdir('./data', function(error, filelist){
         fs.readFile(`data/${queryData.id}`, 'utf8', function(err, description){
         const title = queryData.id;
-        let list = templateList(filelist);
-        const template = templateHTML(title, list, // hidden으로 사용자에게는 안보이게 원래 제목 저장. f12-network-payload 확인. 
+        let list = template.list(filelist);
+        const html = template.html(title, list, // hidden으로 사용자에게는 안보이게 원래 제목 저장. f12-network-payload 확인. 
           `
           <form action = "/update_process" method="post">
           <input type = "hidden" name = "id" value = "${title}">
@@ -141,7 +111,7 @@ const app = http.createServer(function(request,response){
           `<a href = '/create'>create</a> <a href = '/update?id=${title}'>update</a>`
           );
         response.writeHead(200);
-        response.end(template);
+        response.end(html);
       });
     });
     } else if (pathname === '/update_process') {
