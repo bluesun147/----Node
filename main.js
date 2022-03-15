@@ -1,35 +1,3 @@
-const express = require('express');
-const fs = require('fs');
-const template = require('./lib/template');
-
-const app = express();
-
-app.get('/', (req, res) => { // 홈
-    fs.readdir('./data', function(error, filelist){
-        const title = 'Welcome home';
-        const description = 'Hello, Node.js';
-        
-        // let list = templateList(filelist);
-        let list = template.list(filelist);
-
-        const html = template.html(title, list,
-          `<h2>${title}</h2>${description}`,
-          `<a href = '/create'>create</a>`
-          );
-
-        res.send(html);
-      })
-});
-
-app.get('/page', (req, res) => {
-    return res.send('/page');
-})
-
-app.listen(3000, () => {
-    console.log('3000에서 실행!');
-})
-
-/*
 const http = require('http');
 const fs = require('fs');
 const url = require('url');
@@ -226,4 +194,3 @@ const app = http.createServer(function(request,response){
 app.listen(3000, () => {
   console.log('port 3000!');
 });
-*/
